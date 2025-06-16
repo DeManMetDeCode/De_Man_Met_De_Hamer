@@ -1,0 +1,126 @@
+.crocodile-container {
+  position: relative !important;
+  overflow: hidden;
+  width: 100vw !important;
+  height: 50vh !important;
+  border-top: 16px solid black;
+  border-bottom: 16px solid black;
+  background: linear-gradient(to top, #111 0%, #1b2b1b 100%);
+  background-color: #0d120d;
+  pointer-events: none !important;
+  z-index: 100 !important;
+}
+
+@keyframes walk {
+  0% {
+    left: -300px;
+  }
+  100% {
+    left: calc(100vw + 10vw);
+  }
+}
+
+.croc-wrapper {
+  position: absolute !important;
+  animation-name: walk !important;
+  animation-timing-function: linear !important;
+  animation-iteration-count: infinite !important;
+  animation-direction: alternate !important;
+  animation-fill-mode: forwards !important;
+  will-change: left, transform !important;
+  pointer-events: all !important;
+  z-index: 101 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.croc-wrapper.paused {
+  animation-play-state: paused !important;
+}
+
+/* === WADDLE ANIMATION (only on the <img>) === */
+@keyframes waddle {
+  0%,
+  100% {
+    transform: translateY(0) rotate(2deg);
+  }
+  25% {
+    transform: translateY(-2px) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(0) rotate(2deg);
+  }
+  75% {
+    transform: translateY(2px) rotate(-2deg);
+  }
+}
+
+/* CONSOLIDATED CROCODILE STYLES */
+.crocodile {
+  display: block !important;
+  pointer-events: all !important;
+  user-select: none !important;
+  animation: waddle 0.6s ease-in-out infinite !important;
+  transform-origin: center !important;
+  position: relative !important;
+  z-index: 102 !important;
+
+  /* Force visibility */
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  /* Ensure it has dimensions */
+  min-width: 100px !important;
+  min-height: 100px !important;
+
+  /* Add hover effect for debugging */
+  transition: filter 0.2s ease, transform 0.2s ease !important;
+}
+
+.crocodile:hover {
+  filter: brightness(1.1) drop-shadow(0 0 10px rgba(0, 255, 0, 0.3)) !important;
+  transform: scale(1.05) !important;
+}
+
+.crocodile:focus {
+  outline: 2px solid #00ff00 !important;
+  outline-offset: 2px !important;
+}
+
+.crocodile.paused {
+  animation-play-state: paused !important;
+}
+
+/* Hide cursor when the body has this class */
+.hide-cursor,
+.hide-cursor * {
+  cursor: none !important;
+}
+
+/* DEBUGGING: Add visible borders to see what's happening */
+.debug-crocodiles .crocodile-container {
+  border: 3px solid red !important;
+  background: rgba(255, 0, 0, 0.1) !important;
+}
+
+.debug-crocodiles .croc-wrapper {
+  border: 2px solid blue !important;
+  background: rgba(0, 0, 255, 0.1) !important;
+}
+
+.debug-crocodiles .crocodile {
+  border: 2px solid green !important;
+  background: rgba(0, 255, 0, 0.1) !important;
+}
+
+/* Force the full-width wrapper to not interfere */
+.full-width-component.crocodile-wrapper {
+  overflow: visible !important;
+  position: relative !important;
+}
+
+.full-width-component.crocodile-wrapper .full-width-content {
+  overflow: visible !important;
+  pointer-events: none !important;
+  position: relative !important;
+}

@@ -1,0 +1,331 @@
+/* ====================================
+   CATEGORY FILTER COMPONENT STYLES
+   ==================================== */
+
+.category-filter {
+  background-color: transparent;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-family: Raleway, sans-serif;
+}
+
+.category-filter h2 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  display: none; /* Hide title in nav by default */
+}
+
+/* ====================================
+   FILTER BUTTONS - TICKET STYLE
+   ==================================== */
+
+.filter-buttons {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 1rem;
+  justify-content: center;
+  margin: 0;
+  align-items: center;
+}
+
+.radio-group {
+  position: relative;
+}
+
+/* Hide the actual radio input */
+.filter-radio {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Style the label as the ticket button */
+.filter-btn {
+  --ticket-color-border: #3490dc;
+  --ticket-color-card: #e6f3ff;
+  --ticket-color-text: #1a5490;
+  --hapje: 0.5rem;
+  --border: .4em;
+  --content: attr(data-category);
+  --padding: clamp(0.6rem, 2vw, 1rem) clamp(1rem, 3vw, 2rem);
+  --font-size: clamp(0.7rem, 1.8vw, 0.9rem);
+
+  position: relative;
+  text-transform: uppercase;
+  border: none;
+  font-size: var(--font-size);
+  font-weight: 600;
+  color: transparent;
+  padding: var(--padding);
+  background-color: transparent;
+  display: inline-block;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+  user-select: none;
+  text-align: center;
+  cursor: pointer;
+}
+
+.filter-btn::before,
+.filter-btn::after {
+  content: var(--content);
+  position: absolute;
+  color: var(--ticket-color-text);
+  left: 0;
+  top: 0;
+  padding: var(--padding);
+  transform-origin: bottom center;
+  transition: transform 0.3s ease;
+  font-size: var(--font-size);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background-image:
+    linear-gradient(var(--ticket-color-border) var(--border), transparent 0 calc(100% - var(--border)), var(--ticket-color-border) 0),
+    linear-gradient(90deg, var(--ticket-color-border) var(--border), transparent 0 calc(100% - var(--border)), var(--ticket-color-border) 0),
+    radial-gradient(circle at 0 0, transparent var(--hapje), var(--ticket-color-border) 0 calc(var(--hapje) + var(--border) ), var(--ticket-color-card) 0),
+    radial-gradient(circle at 100% 0, transparent var(--hapje), var(--ticket-color-border) 0 calc(var(--hapje) + var(--border) ), var(--ticket-color-card) 0),
+    radial-gradient(circle at 100% 100%, transparent var(--hapje), var(--ticket-color-border) 0 calc(var(--hapje) + var(--border) ), var(--ticket-color-card) 0),
+    radial-gradient(circle at 0 100%, transparent var(--hapje), var(--ticket-color-border) 0 calc(var(--hapje) + var(--border) ), var(--ticket-color-card) 0);
+  
+  background-size:
+    calc(100% - 2 * var(--hapje)) 100%,
+    100% calc(100% - 2 * var(--hapje)),
+    51% 51%,
+    51% 51%,
+    51% 51%,
+    51% 51%;
+  background-repeat: no-repeat;
+  background-position:
+    center top,
+    left center,
+    left top,
+    right top,
+    right bottom,
+    left bottom;
+}
+
+.filter-btn::before {
+  clip-path: polygon(0% 0%, 0% 100%, 40% 100%, 60% 0%);
+  z-index: 1;
+}
+
+.filter-btn::after {
+  clip-path: polygon(60% 0%, 40% 100%, 100% 100%, 100% 0%);
+  z-index: 2;
+}
+
+/* Hover effects */
+.filter-btn:hover::before {
+  transform: rotate(-6deg);
+}
+
+.filter-btn:hover::after {
+  transform: rotate(6deg);
+}
+
+/* Active effects */
+.filter-btn:active::before {
+  transform: translateX(-.25em) rotate(-6deg);
+}
+
+.filter-btn:active::after {
+  transform: translateX(.25em) rotate(6deg);
+}
+
+.filter-radio:checked + .filter-btn::before,
+.filter-btn.active::before {
+  transform: rotate(-3deg);
+}
+
+.filter-radio:checked + .filter-btn::after,
+.filter-btn.active::after {
+  transform: rotate(3deg);
+}
+
+/* ====================================
+   CATEGORY-SPECIFIC TICKET COLORS
+   ==================================== */
+
+/* Default/All button - Blue theme */
+.filter-btn[data-category="all"] {
+  --ticket-color-border: #3490dc;
+  --ticket-color-card: #e6f3ff;
+  --ticket-color-text: #1a5490;
+}
+
+/* Category-specific themes */
+.filter-btn[data-category*="PROP"] {
+  --ticket-color-border: #104C1C;
+  --ticket-color-card: #308F3E;
+  --ticket-color-text: #012809;
+}
+
+.filter-btn[data-category*="DECOR"] {
+  --ticket-color-border: #b80006;
+  --ticket-color-card: #e81b21;
+  --ticket-color-text: #3d0002;
+}
+
+.filter-btn[data-category*="INTERIEUR"] {
+  --ticket-color-border: #B89300;
+  --ticket-color-card: #ffca3a;
+  --ticket-color-text: #524100;
+}
+
+/* ====================================
+   FILTER FUNCTIONALITY - FROM JS
+   ==================================== */
+
+/* Filtered project cards */
+.project-card.filtered-out {
+  display: none !important;
+}
+
+.project-card.filtered-in {
+  display: block;
+  opacity: 1;
+  transform: scale(1);
+  filter: none;
+  pointer-events: auto;
+  transition: all 0.3s ease;
+}
+
+/* Grid transition effects */
+.dynamic-grid {
+  transition: opacity 0.3s ease;
+}
+
+.dynamic-grid.filtering {
+  opacity: 0.8;
+}
+
+/* Visual feedback for filtering */
+.project-card {
+  transition: all 0.3s ease;
+}
+
+.project-card:not(.filtered-out) {
+  opacity: 1;
+  transform: scale(1);
+  filter: none;
+  pointer-events: auto;
+}
+
+/* ====================================
+   MOBILE OVERLAY SPECIFIC STYLES
+   ==================================== */
+
+/* Mobile overlay filter styles */
+.mobile-overlay .category-filter {
+  background: transparent;
+}
+
+.mobile-overlay .category-filter h2 {
+  display: block;
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.mobile-overlay .filter-buttons {
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+  width: 100%;
+  margin-right: 0;
+}
+
+.mobile-overlay .filter-btn {
+  width: 80%;
+  max-width: 300px;
+  text-align: center;
+}
+
+/* ====================================
+   RESPONSIVE DESIGN
+   ==================================== */
+
+/* Desktop - maintain original size */
+@media (min-width: 1025px) {
+  .filter-btn {
+    --padding: 0.8rem 1.8rem;
+    --font-size: 0.85rem;
+  }
+  
+  .filter-buttons {
+    gap: 1rem;
+    margin: 0;
+  }
+}
+
+/* Large tablet - slight reduction */
+@media (max-width: 1024px) and (min-width: 901px) {
+  .filter-buttons {
+    gap: 0.8rem;
+    margin: 0;
+    flex-wrap: nowrap;
+  }
+  
+  .filter-btn {
+    --padding: 0.7rem 1.4rem;
+    --font-size: 0.75rem;
+  }
+}
+
+/* Medium tablet - more reduction */
+@media (max-width: 900px) and (min-width: 769px) {
+  .filter-buttons {
+    gap: 0.6rem;
+    margin: 0;
+    flex-wrap: nowrap;
+  }
+  
+  .filter-btn {
+    --padding: 0.6rem 1rem;
+    --font-size: 0.7rem;
+  }
+}
+
+/* Small tablet and mobile - original mobile styles */
+@media (max-width: 768px) {
+  .category-filter {
+    padding: 1rem;
+  }
+  
+  .filter-buttons {
+    gap: 1rem;
+    justify-content: center;
+  }
+  
+  .filter-btn {
+    --padding: clamp(0.7rem, 2vw, 0.8rem) clamp(1.2rem, 3vw, 1.5rem);
+    --font-size: clamp(0.75rem, 1.8vw, 0.8rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .filter-btn {
+    --padding: clamp(0.5rem, 2vw, 0.6rem) clamp(1rem, 3vw, 1.2rem);
+    --font-size: clamp(0.65rem, 1.8vw, 0.75rem);
+  }
+  
+  .filter-buttons {
+    gap: 0.8rem;
+  }
+  
+  /* Mobile overlay adjustments */
+  .mobile-overlay .filter-btn {
+    width: 90%;
+    --padding: 0.8rem 1.5rem;
+    --font-size: 0.9rem;
+  }
+}

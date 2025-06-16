@@ -1,0 +1,35 @@
+/* Force hide default cursor everywhere */
+*, *::before, *::after {
+    cursor: none !important;
+}
+
+html, body {
+    cursor: none !important;
+}
+
+/* Ensure no element can override */
+a, button, input, textarea, select, 
+.lights, .project-image-wrapper, .cannon-container, .hamburger-menu, .filter-btn, .search-input,
+[role="button"], [tabindex] {
+    cursor: none !important;
+}
+
+.cursor {
+  position: fixed;
+  width: 120px;
+  height: 120px;
+  background-image: url("/images/cursor/hamer-Idle.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 9999999999 !important;
+}
+
+.hover-cursor {
+  background-image: url("/images/cursor/hamer-hover.png");
+}
+
+.active-cursor {
+  background-image: url("/images/cursor/hamer-active.png");
+}

@@ -1,0 +1,19 @@
+<div class="category-filter">
+  <div id="filterButtons" class="filter-buttons">
+    <div class="radio-group">
+      <input type="radio" id="category-all" name="category-filter" value="all" class="filter-radio" checked>
+      <label for="category-all" class="filter-btn" data-category="all">
+        ALL
+      </label>
+    </div>
+    
+    {% for category in categories %}
+      <div class="radio-group">
+        <input type="radio" id="category-{{ category | handleize }}" name="category-filter" value="{{ category | upcase }}" class="filter-radio">
+        <label for="category-{{ category | handleize }}" class="filter-btn" data-category="{{ category | upcase }}">
+          {{ category }}
+        </label>
+      </div>
+    {% endfor %}
+  </div>
+</div>

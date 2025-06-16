@@ -1,0 +1,52 @@
+<template id="image-popover-template" style="display: none;">
+  <div class="image-popover-overlay">
+    <div class="image-popover-container">
+
+      <!-- Project Title -->
+      <h3 class="project-popover-title">Project Title</h3>
+
+      <!-- Project Details -->
+      <div class="project-popover-details">
+
+        <p class="project-popover-production" style="display: none;">Production info</p>
+        <p class="project-popover-photographer" style="display: none;">Photographer info</p>
+        <p class="project-popover-date" style="display: none;">Date info</p>
+        <span class="project-popover-category" style="display: none;">Category</span>
+
+      </div>
+
+      <!-- Images List -->
+      <button id="prev"><img src="/public/images/projects/arrow-left.png" alt="Prev"></button>
+      <button id="next"><img src="/public/images/projects/arrow-right.png" alt="Next"></button>
+
+
+      <div class="carousel">
+        <div class="carousel-counter" id="counter">1/3</div>
+
+        <ul class="project-popover-images-list">
+          <!-- Images will be populated by JavaScript -->
+        </ul>
+
+        <div class="carousel-dots" id="dots"></div>
+      </div>
+
+
+
+
+
+      <!-- Meta Info -->
+      <div class="project-popover-meta">
+        <img class="project-popover-for-sale" src="/public/images/projects/for-sale.png" alt="For Sale"
+          style="display: none;">
+        {% comment %} <span style="display: none;">Te koop</span> {% endcomment %}
+      </div>
+
+
+
+      <!-- Close Button -->
+      <button class="image-popover-close" aria-label="Close project popup">
+        <img src="/public/images/projects/cross-close.png" alt="Close">
+      </button>
+    </div>
+  </div>
+</template>

@@ -1,0 +1,191 @@
+/* Curtains Transition - Fixed to match your HTML structure */
+
+/* Prevent flash - hide page content initially when transitioning */
+body.transitioning {
+    visibility: hidden;
+}
+
+#curtainsTransition {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9998;
+    pointer-events: none;
+    display: none; /* Hidden by default */
+    transform-style: preserve-3d;
+    translate: 0 0 17px;
+    --curtain-pattern: repeating-linear-gradient(90deg,
+            #5a0000 0,
+            #a00000 30px,
+            #cc0000 40px,
+            #720000 60px,
+            #2d0000 80px,
+            #420000 112px,
+            #5a0000 120px,
+            #a00000 124px,
+            #a00000 132px,
+            #5a0000 140px,
+            #7b0000 164px,
+            #a00000 175px,
+            #a00000 180px,
+            #a00000 200px,
+            #7a0000 205px,
+            #5a0000 220px);
+    --custom-easing: cubic-bezier(0.140, 0.935, 0.240, 0.940);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#curtainsTransition.curtains-active {
+    display: flex;
+    pointer-events: all;
+}
+
+/* CSS-first approach - curtains start closed when active to prevent flash */
+#curtainsTransition.curtains-active .curtain-left,
+#curtainsTransition.curtains-active .curtain-right {
+    transform: translate(0vw, 0vh); /* Start closed by default */
+}
+
+/* Curtain styling - no box shadow, extra height to prevent glitches */
+.curtain-left {
+    position: absolute;
+    top: -10px; /* Start slightly above viewport */
+    left: -1px;
+    background-image: var(--curtain-pattern);
+    width: 51vw;
+    height: 110vh; /* Increased height to prevent bottom gaps */
+    z-index: 5;
+    clip-path: polygon(0% 100%,
+            0% 0%,
+            100% 0%,
+            100% 50%,
+            98% 57%,
+            97% 63%,
+            95% 68%,
+            93% 74%,
+            91% 79%,
+            88% 83%,
+            86% 86%,
+            84% 89%,
+            81% 94%,
+            77% 96%,
+            72% 99%,
+            50% 100%);
+    /* Default closed state */
+    transform: translate(0vw, 0vh);
+}
+
+.curtain-right {
+    position: absolute;
+    top: -10px; /* Start slightly above viewport */
+    right: -1vw;
+    background-image: var(--curtain-pattern);
+    width: 51vw;
+    height: 110vh; /* Increased height to prevent bottom gaps */
+    z-index: 5;
+    clip-path: polygon(100% 100%,
+            100% 0%,
+            0% 0%, 0% 50%,
+            2% 57%,
+            3% 63%,
+            5% 68%,
+            7% 74%,
+            9% 79%,
+            12% 83%,
+            14% 86%,
+            16% 89%,
+            19% 94%,
+            23% 96%,
+            28% 99%,
+            50% 100%);
+    /* Default closed state */
+    transform: translate(0vw, 0vh);
+}
+
+.curtain-light {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.05), transparent 70%);
+    z-index: 4;
+    pointer-events: none;
+}
+
+/* Container state animations */
+
+/* Closed state - curtains cover the screen */
+#curtainsTransition.curtains-closed .curtain-left {
+    transform: translate(0vw, 0vh);
+}
+
+#curtainsTransition.curtains-closed .curtain-right {
+    transform: translate(0vw, 0vh);
+}
+
+/* Closing animation */
+#curtainsTransition.curtains-closing .curtain-left {
+    animation: curtain-left-close 2s var(--custom-easing) forwards;
+}
+
+#curtainsTransition.curtains-closing .curtain-right {
+    animation: curtain-right-close 2s var(--custom-easing) forwards;
+}
+
+/* Opening animation */
+#curtainsTransition.curtains-opening .curtain-left {
+    animation: curtain-left-open 2s var(--custom-easing) forwards;
+}
+
+#curtainsTransition.curtains-opening .curtain-right {
+    animation: curtain-right-open 2s var(--custom-easing) forwards;
+}
+
+/* Open state - curtains off screen */
+#curtainsTransition.curtains-open .curtain-left {
+    transform: translate(-52vw, -105vh);
+}
+
+#curtainsTransition.curtains-open .curtain-right {
+    transform: translate(52vw, -105vh);
+}
+
+/* Keyframes - adjusted for better coverage */
+@keyframes curtain-left-close {
+    0% {
+        transform: translate(-52vw, -105vh);
+    }
+    100% {
+        transform: translate(0vw, 0vh);
+    }
+}
+
+@keyframes curtain-right-close {
+    0% {
+        transform: translate(52vw, -105vh);
+    }
+    100% {
+        transform: translate(0vw, 0vh);
+    }
+}
+
+@keyframes curtain-left-open {
+    0% {
+        transform: translate(0vw, 0vh);
+    }
+    100% {
+        transform: translate(-52vw, -105vh);
+    }
+}
+
+@keyframes curtain-right-open {
+    0% {
+        transform: translate(0vw, 0vh);
+    }
+    100% {
+        transform: translate(52vw, -105vh);
+    }
+}

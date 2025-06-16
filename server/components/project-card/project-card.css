@@ -1,0 +1,387 @@
+/* ====================================
+   PROJECT CARD COMPONENT STYLES
+   ==================================== */
+
+.project-card {
+  display: flex;
+  flex-wrap: wrap;
+  font-family: Raleway, sans-serif;
+  position: relative;
+  overflow: hidden;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  width: 100%;
+  height: 100%;
+}
+
+/* ====================================
+   ASPECT RATIO CLASSES - USING ASPECT-RATIO PROPERTY
+   ==================================== */
+
+.landscape-card,
+.landscape,
+.project-card[data-aspect-ratio="landscape"] {
+  grid-row: span 1 !important;
+  grid-column: span 2 !important;
+  aspect-ratio: 2 / 1; /* 2:1 ratio */
+}
+
+.portrait-card,
+.portrait,
+.project-card[data-aspect-ratio="portrait"] {
+  grid-row: span 2 !important;
+  grid-column: span 1 !important;
+  aspect-ratio: 1 / 2; /* 1:2 ratio */
+}
+
+.square,
+.project-card[data-aspect-ratio="square"] {
+  grid-row: span 1 !important;
+  grid-column: span 1 !important;
+  aspect-ratio: 1 / 1; /* Perfect 1:1 square */
+}
+
+/* Smart Sizing Classes for Grid Optimizer */
+.span-2 {
+  grid-column: span 2 !important;
+}
+
+.span-3 {
+  grid-column: span 3 !important;
+}
+
+.row-span-2 {
+  grid-row: span 2 !important;
+}
+
+
+
+/* ====================================
+   PROJECT IMAGE
+   ==================================== */
+
+.project-image-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.project-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  min-height: 100%;
+  transition: transform 0.3s ease;
+  background-color: #333;
+  display: block;
+  vertical-align: top;
+}
+
+/* Image Loading States */
+.project-image-wrapper img:not([src]),
+.project-image-wrapper img[src=""] {
+  background-color: #444;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Ctext x='50' y='50' text-anchor='middle' dominant-baseline='middle' fill='%23999' font-size='12'%3ELoading...%3C/text%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100px 100px;
+}
+
+.project-card:hover .project-image-wrapper img {
+  transform: scale(1.05);
+}
+
+/* ====================================
+   PROJECT DETAILS
+   ==================================== */
+
+.project-details {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  width: 100%;
+  pointer-events: none;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.5));
+  padding: 1rem;
+  padding-top: 2rem;
+  box-sizing: border-box;
+}
+
+.project-details h2 {
+  color: white;
+  margin: 0;
+  /* text-transform: uppercase; */
+  font-size: clamp(1em, 3vw, 1.5em);
+  font-weight: 600;
+  pointer-events: auto;
+}
+
+/* ====================================
+   PROJECT INFO
+   ==================================== */
+
+.project-info {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.project-production,
+.project-date {
+  font-size: 0.85rem;
+  color: #777;
+  margin-bottom: 0.25rem;
+}
+
+/* ====================================
+   CATEGORY BADGE - TICKET STYLE
+   ==================================== */
+
+.category {
+  position: absolute;
+  bottom: 60px;
+  right: 20px;
+  z-index: 3;
+  pointer-events: none;
+  transition: transform 0.3s ease;
+
+  /* Ticket Style Variables */
+  --ticket-color-border: black;
+  --ticket-color-card: white;
+  --ticket-color-text: black;
+  --hapje: 0.5rem;
+  --border: 0.3em;
+  --padding: 0.5rem 1rem;
+
+  /* Reset previous styles */
+  border: none;
+  background-color: transparent;
+  padding: var(--padding);
+
+  /* Ticket Style Background */
+  background-image: linear-gradient(
+      var(--ticket-color-border) var(--border),
+      transparent 0 calc(100% - var(--border)),
+      var(--ticket-color-border) 0
+    ),
+    linear-gradient(
+      90deg,
+      var(--ticket-color-border) var(--border),
+      transparent 0 calc(100% - var(--border)),
+      var(--ticket-color-border) 0
+    ),
+    radial-gradient(
+      circle at 0 0,
+      transparent var(--hapje),
+      var(--ticket-color-border) 0 calc(var(--hapje) + var(--border)),
+      var(--ticket-color-card) 0
+    ),
+    radial-gradient(
+      circle at 100% 0,
+      transparent var(--hapje),
+      var(--ticket-color-border) 0 calc(var(--hapje) + var(--border)),
+      var(--ticket-color-card) 0
+    ),
+    radial-gradient(
+      circle at 100% 100%,
+      transparent var(--hapje),
+      var(--ticket-color-border) 0 calc(var(--hapje) + var(--border)),
+      var(--ticket-color-card) 0
+    ),
+    radial-gradient(
+      circle at 0 100%,
+      transparent var(--hapje),
+      var(--ticket-color-border) 0 calc(var(--hapje) + var(--border)),
+      var(--ticket-color-card) 0
+    );
+
+  background-size: calc(100% - 2 * var(--hapje)) 100%,
+    100% calc(100% - 2 * var(--hapje)), 51% 51%, 51% 51%, 51% 51%, 51% 51%;
+  background-repeat: no-repeat;
+  background-position: center top, left center, left top, right top,
+    right bottom, left bottom;
+}
+
+.category p {
+  color: var(--ticket-color-text);
+  text-transform: uppercase;
+  font-size: clamp(0.8em, 2.5vw, 1.1em);
+  font-weight: 600;
+  margin: 0;
+  pointer-events: auto;
+}
+
+/* Category Color Variants - matching filter button colors */
+.category.decor {
+  --ticket-color-border: #b80006;
+  --ticket-color-card: #e81b21;
+  --ticket-color-text: #3d0002;
+}
+
+.category.props {
+  --ticket-color-border: #104c1c;
+  --ticket-color-card: #308f3e;
+  --ticket-color-text: #012809;
+}
+
+.category.interieur,
+.category.interior {
+  --ticket-color-border: #b89300;
+  --ticket-color-card: #ffca3a;
+  --ticket-color-text: #524100;
+}
+
+/* ====================================
+   SPECIAL BADGES
+   ==================================== */
+
+.for-sale-badge {
+  display: inline-block;
+  background-color: #4caf50;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+/* ====================================
+   HOVER EFFECTS
+   ==================================== */
+
+.project-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.project-card:hover .category {
+  transform: scale(1.1);
+}
+
+/* ====================================
+   FILTER STATES
+   ==================================== */
+
+.filtered-out {
+  display: none !important;
+}
+
+.filtered-in {
+  opacity: 1 !important;
+  transform: scale(1) !important;
+  filter: none !important;
+  animation: fadeInFilter 0.4s ease forwards;
+}
+
+@keyframes fadeInFilter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.filtering {
+  transition: opacity 0.3s ease;
+}
+
+/* ====================================
+   LOADING STATES
+   ==================================== */
+
+.project-card.loading {
+  min-height: 250px;
+}
+
+.project-card.loading .project-image-wrapper {
+  background-color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.project-card.loading .project-image-wrapper::before {
+  content: "Loading...";
+  color: #999;
+  font-size: 14px;
+}
+
+/* ====================================
+   MOBILE RESPONSIVE OVERRIDES
+   ==================================== */
+
+@media (max-width: 768px) {
+  .projects-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-auto-rows: 200px;
+  }
+
+  .landscape-card {
+    grid-column: span 2 !important;
+  }
+
+  .portrait-card {
+    grid-row: span 2 !important;
+  }
+
+  .category {
+    bottom: 40px;
+    right: 15px;
+    --padding: 0.3rem 0.8rem;
+    --hapje: 0.4rem;
+    --border: 0.25em;
+  }
+}
+
+@media (max-width: 480px) {
+  .projects-grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: 250px;
+  }
+  
+  .landscape-card,
+  .portrait-card,
+  .square {
+    grid-column: span 1 !important;
+    grid-row: span 1 !important;
+  }
+
+  .category {
+    bottom: 30px;
+    right: 10px;
+    --padding: 0.25rem 0.6rem;
+    --hapje: 0.3rem;
+    --border: 0.2em;
+  }
+
+  .category p {
+    font-size: clamp(0.7em, 2vw, 0.9em);
+  }
+}
+
+/* ====================================
+   DEBUG STYLES (OPTIONAL)
+   ==================================== */
+
+.debug-aspect-ratios .project-card {
+  border: 2px solid red !important;
+}
+
+.debug-aspect-ratios .portrait-card {
+  border-color: blue !important;
+}
+
+.debug-aspect-ratios .landscape-card {
+  border-color: green !important;
+}
+
+.debug-aspect-ratios .square {
+  border-color: orange !important;
+}

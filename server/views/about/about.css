@@ -1,0 +1,365 @@
+/* * {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+} */
+.wrapper-about h3 {
+  font-size: 1.4rem;
+  color: black;
+}
+
+.wrapper-about h4 {
+  padding-top: 2rem;
+  font-size: 1.8rem;
+  text-transform: uppercase;
+}
+
+.wrapper-about h1,
+.wrapper-about h2,
+.wrapper-about h4 {
+  font-family: "franchise", impact, arial, sans-serif;
+  text-transform: uppercase;
+  color: black;
+}
+
+.about-nav {
+  width: 100%;
+  height: 75px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.employee-wrapper,
+.about,
+.about-nav {
+  max-width: 1200px;
+}
+
+.wrapper-about p .wrapper-about h3 {
+  font-family: monospace;
+}
+
+.wrapper-about {
+  display: flex;
+  width: 100vw;
+  height: fit-content;
+  background: linear-gradient(
+    0deg,
+    rgba(147, 147, 140, 1) 1%,
+    rgba(225, 225, 215, 1) 2%,
+    rgba(225, 225, 215, 1) 99%,
+    rgba(147, 147, 140, 1) 100%
+  );
+  background-repeat: repeat-y;
+  background-size: 100% 4rem;
+  min-height: 100vh;
+}
+
+aside {
+  width: 5vw;
+  min-width: 4rem;
+  max-width: 8rem;
+  background: radial-gradient(
+    circle,
+    rgba(69, 69, 69, 1) 20%,
+    rgba(232, 232, 232, 1) 20%
+  );
+  background-repeat: repeat-y;
+  background-size: 100% 4rem;
+}
+
+aside h3 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  padding-bottom: 2rem;
+}
+
+aside h3:first-of-type {
+  padding-top: 2rem;
+  text-align: center;
+}
+
+.wrapper-about main {
+  display: flex;
+  flex-direction: column;
+  width: 90vw;
+  flex-grow: 1;
+  padding: 5rem 4rem 5rem 2rem;
+  align-items: center;
+}
+
+.employee-wrapper {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.employee {
+  width: 100%;
+}
+
+.employee .image {
+  width: 100%;
+  position: relative;
+}
+
+.employee .image img {
+  width: 100%;
+  object-fit: cover;
+}
+
+.text {
+  padding-top: 1rem;
+}
+
+.about-h1 {
+  font-size: 3rem;
+  text-align: left;
+  margin-bottom: 0;
+}
+
+.about-h2 {
+  font-size: 2rem;
+  text-align: left;
+  margin-bottom: 0;
+}
+
+.about-p {
+  font-size: 1.2rem;
+  padding-top: 0.3rem;
+  line-height: 1.5;
+  color: black;
+}
+
+.employee:nth-of-type(1) .image .green-magnet {
+  /* hammer */
+  position: absolute;
+  top: 5%;
+  left: -5%;
+  /* background-color: red; */
+  rotate: 3deg;
+  height: 90%;
+  width: auto;
+  object-fit: contain;
+}
+
+.employee:nth-of-type(1) .image .hammer {
+  position: absolute;
+  bottom: -10%;
+  right: 0%;
+  rotate: 5deg;
+  width: 30%;
+}
+
+.employee:nth-of-type(2) .cloud {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  /* background-color: beige; */
+  rotate: 5deg;
+  width: 40%;
+  /* aspect-ratio: 3 / 1; */
+}
+
+.employee:nth-of-type(2) .image .white-magnet {
+  /* hammer */
+  position: absolute;
+  top: 5%;
+  left: 2%;
+  rotate: -6deg;
+  height: 90%;
+  width: auto;
+  object-fit: contain;
+  z-index: 3;
+}
+
+.employee:nth-of-type(2) .tape {
+  position: absolute;
+  top: 30%;
+  right: -10%;
+  rotate: -5deg;
+  width: 30%;
+  z-index: 3;
+}
+
+.employee:nth-of-type(2) .scribble {
+  position: absolute;
+  bottom: -10%;
+  right: 0;
+  background-color: yellow;
+  rotate: 15deg;
+  width: 20%;
+  aspect-ratio: 3 / 4;
+}
+
+.employee:nth-of-type(3) .image .red-magnet {
+  /* hammer */
+  position: absolute;
+  top: 5%;
+  left: -5%;
+  rotate: 3deg;
+  height: 90%;
+  width: auto;
+  object-fit: contain;
+}
+
+.employee:nth-of-type(3) .image .tape {
+  position: absolute;
+  top: 0;
+  right: -15%;
+  background-color: beige;
+  rotate: 45deg;
+  width: 50%;
+  aspect-ratio: 6 / 2;
+}
+
+.employee:nth-of-type(4) .image .tape {
+  position: absolute;
+  top: -5%;
+  right: 15%;
+  rotate: 5deg;
+  width: 40%;
+}
+
+.employee:nth-of-type(4) .image .orange-magnet {
+  /* hammer */
+  position: absolute;
+  top: 10%;
+  left: -10%;
+  rotate: 5deg;
+  height: 90%;
+  width: auto;
+  object-fit: contain;
+}
+
+.employee:nth-of-type(4) .image .hammer {
+  position: absolute;
+  bottom: -10%;
+  right: 0%;
+  rotate: 5deg;
+  width: 30%;
+  transform: rotate(30deg);
+}
+
+.about {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-top: 5rem;
+}
+
+.about > div {
+  width: 100%;
+}
+
+.maps iframe {
+  width: 100%;
+  aspect-ratio: 4/3;
+  padding-bottom: 1rem;
+}
+
+.text-maps {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ontop {
+  z-index: 3;
+}
+
+/* 🟨 Tablets: 2 per row */
+@media (min-width: 600px) {
+  .employee-wrapper > .employee {
+    width: calc(50% - 0.5rem);
+  }
+}
+
+/* 🟩 Desktops: 4 per row */
+@media (min-width: 1024px) {
+  .employee-wrapper > .employee {
+    width: calc(25% - 0.75rem);
+  }
+
+  .about {
+    flex-wrap: nowrap;
+    width: 100%;
+  }
+}
+
+.a-ticket {
+  --ticket-color-border: black;
+  --ticket-color-card: white;
+  --ticket-color-text: white;
+  --hapje: 0.5rem;
+  --border: 0.3em;
+  --content: "filler";
+  --padding: 1rem 1.5rem;
+  text-transform: uppercase;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  color: transparent;
+  padding: var(--padding);
+  background-color: transparent;
+
+  content: var(--content);
+  color: black;
+  left: 0;
+  top: 0;
+  padding: var(--padding);
+  transform-origin: bottom center;
+  transition: transform 0.3s ease;
+  background-image: linear-gradient(
+      var(--ticket-color-border) var(--border),
+      transparent 0 calc(100% - var(--border)),
+      var(--ticket-color-border) 0
+    ),
+    linear-gradient(
+      90deg,
+      var(--ticket-color-border) var(--border),
+      transparent 0 calc(100% - var(--border)),
+      var(--ticket-color-border) 0
+    ),
+    radial-gradient(
+      circle at 0 0,
+      transparent var(--hapje),
+      var(--ticket-color-border) 0 calc(var(--hapje) + var(--border)),
+      var(--ticket-color-card) 0
+    ),
+    radial-gradient(
+      circle at 100% 0,
+      transparent var(--hapje),
+      var(--ticket-color-border) 0 calc(var(--hapje) + var(--border)),
+      var(--ticket-color-card) 0
+    ),
+    radial-gradient(
+      circle at 100% 100%,
+      transparent var(--hapje),
+      var(--ticket-color-border) 0 calc(var(--hapje) + var(--border)),
+      var(--ticket-color-card) 0
+    ),
+    radial-gradient(
+      circle at 0 100%,
+      transparent var(--hapje),
+      var(--ticket-color-border) 0 calc(var(--hapje) + var(--border)),
+      var(--ticket-color-card) 0
+    );
+
+  background-size: calc(100% - 2 * var(--hapje)) 100%,
+    100% calc(100% - 2 * var(--hapje)), 51% 51%, 51% 51%, 51% 51%, 51% 51%;
+  background-repeat: no-repeat;
+  background-position: center top, left center, left top, right top,
+    right bottom, left bottom;
+  text-transform: uppercase;
+}
+
+.ticket-color {
+  --ticket-color-border: #b80006;
+  --ticket-color-card: #e81b21;
+  --ticket-color-text: #3d0002;
+}

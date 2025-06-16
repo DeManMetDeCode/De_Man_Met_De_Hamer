@@ -1,0 +1,21 @@
+{% block project-card %}
+<div class="project-card {{ project.aspectRatioClass }}" 
+     data-project-data='{{ project | json }}'
+     data-pop-image>
+    <div class="project-image-wrapper">
+        <img src="{{ project.projectFeaturedImage }}" alt="{{ project.projectname }}" loading="lazy">
+    </div>
+    
+    <div class="project-info">
+        <div class="project-details">
+            <div class='project-details'>
+                <h2>{{ project.projectname }}</h2>
+            </div>
+            
+            <div class='category'>
+                <p>{{ project.category }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
