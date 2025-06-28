@@ -2,7 +2,14 @@
    PROJECT GRID SYSTEM CSS
    ==================================== */
 
+
 /* Container and Base Grid */
+
+:root{
+  --column-count: 6;
+
+
+}
 .container {
   min-height: 100dvh;
 
@@ -163,7 +170,7 @@ h1 {
 .projects-grid {
   --gap-size: .6em;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(var(--column-count), 1fr);
   grid-auto-flow: row dense;
   width: calc(100% - (var(--gap-size) * 2));
   /* min-height: 100vh; */
@@ -349,6 +356,10 @@ h1 {
     display: none;
   }
 
+  .projects-grid{
+    --column-count: 4;
+  }
+
   .mobile-overlay {
     display: none;
   }
@@ -413,7 +424,7 @@ h1 {
   }
 
   .projects-grid {
-    grid-template-columns: repeat(2, 1fr);
+    --column-count: 2;
     --gap-size: 0.4em;
   }
 
@@ -453,9 +464,9 @@ h1 {
 
 @media (max-width: 480px) {
   .projects-grid {
-    grid-template-columns: 1fr;
+    /* grid-template-columns: 1fr; */
     --gap-size: 0.4em;
-
+    --column-count: 2;
   }
 
   .span-2,

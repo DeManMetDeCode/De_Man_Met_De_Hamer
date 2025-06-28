@@ -1,7 +1,7 @@
 /**
  * Clean Object Pool System - JavaScript Only (Simplified Version)
  * UPDATED: Optimized to work seamlessly with external search functionality
- * REMOVED: Any potential search conflicts
+ * FIXED: Removes duplicates by clearing original elements after loading
  */
 
 class CleanGridPool {
@@ -10,7 +10,7 @@ class CleanGridPool {
       containerSelector: options.containerSelector || '#dynamicGrid',
       defaultShowCount: options.defaultShowCount || 100,
       fullWidthEveryRows: options.fullWidthEveryRows || 5,
-      columnsCount: options.columnsCount || 5,
+      columnsCount: options.columnsCount || 6,
       debug: options.debug || false
     };
 
@@ -33,35 +33,35 @@ class CleanGridPool {
   }
 
   initializeCustomComponents() {
-  this.initializeFullWidthComponents();
-  this.initializeCrocodileComponents(); // Add this line
-  
-  document.dispatchEvent(new CustomEvent('gridRerendered', {
-    detail: { gridInstance: this }
-  }));
-}
-
-// Add this new method to handle crocodile initialization
-initializeCrocodileComponents() {
-  const crocodileContainers = this.container.querySelectorAll('.crocodile-container');
-  
-  crocodileContainers.forEach((container) => {
-    // Check if already initialized to prevent duplicates
-    if (container.querySelector('.croc-wrapper')) {
-      return;
-    }
+    this.initializeFullWidthComponents();
+    this.initializeCrocodileComponents(); // Add this line
     
-    // Trigger crocodile initialization if function exists
-    if (typeof window.initializeCrocodiles === 'function') {
-      window.initializeCrocodiles();
-    } else {
-      // If the function doesn't exist globally, dispatch an event
-      document.dispatchEvent(new CustomEvent('initializeCrocodiles', {
-        detail: { container: container }
-      }));
-    }
-  });
-}
+    document.dispatchEvent(new CustomEvent('gridRerendered', {
+      detail: { gridInstance: this }
+    }));
+  }
+
+  // Add this new method to handle crocodile initialization
+  initializeCrocodileComponents() {
+    const crocodileContainers = this.container.querySelectorAll('.crocodile-container');
+    
+    crocodileContainers.forEach((container) => {
+      // Check if already initialized to prevent duplicates
+      if (container.querySelector('.croc-wrapper')) {
+        return;
+      }
+      
+      // Trigger crocodile initialization if function exists
+      if (typeof window.initializeCrocodiles === 'function') {
+        window.initializeCrocodiles();
+      } else {
+        // If the function doesn't exist globally, dispatch an event
+        document.dispatchEvent(new CustomEvent('initializeCrocodiles', {
+          detail: { container: container }
+        }));
+      }
+    });
+  }
 
   init() {
     if (!this.container) {
@@ -78,6 +78,9 @@ initializeCrocodileComponents() {
     
     // Listen for search events to ensure grid updates properly
     this.setupSearchIntegration();
+    
+    // Set initialization flag after everything is done
+    this.state.isInitialized = true;
   }
 
   setupSearchIntegration() {
@@ -108,7 +111,11 @@ initializeCrocodileComponents() {
 
     if (this.config.debug) {
       console.log('=== DOM Order Debug ===');
+      console.log(`Found: ${projectCards.length} projects, ${squares.length} squares, ${customItems.length} custom, ${fullWidthItems.length} full-width`);
     }
+    
+    // Store original elements for removal
+    const elementsToRemove = [];
     
     projectCards.forEach((element, index) => {
       const titleEl = element.querySelector('.project-title, h3, .title, .project-details h2, h2');
@@ -124,8 +131,11 @@ initializeCrocodileComponents() {
         element: element.cloneNode(true),
         type: 'project',
         spans: this.getItemSpans(element),
-        data: { id: `project-${index}`, index, title }
+        data: { id: `project-${index}`, index, title },
+        originalOrder: Array.from(this.container.children).indexOf(element)
       });
+      
+      elementsToRemove.push(element);
     });
 
     squares.forEach((element, index) => {
@@ -133,8 +143,11 @@ initializeCrocodileComponents() {
         element: element.cloneNode(true),
         type: 'square',
         spans: this.getItemSpans(element),
-        data: { id: `square-${index}`, index }
+        data: { id: `square-${index}`, index },
+        originalOrder: Array.from(this.container.children).indexOf(element)
       });
+      
+      elementsToRemove.push(element);
     });
 
     customItems.forEach((element, index) => {
@@ -142,8 +155,11 @@ initializeCrocodileComponents() {
         element: element.cloneNode(true),
         type: 'custom',
         spans: this.getItemSpans(element),
-        data: { id: `custom-${index}`, index }
+        data: { id: `custom-${index}`, index },
+        originalOrder: Array.from(this.container.children).indexOf(element)
       });
+      
+      elementsToRemove.push(element);
     });
 
     fullWidthItems.forEach((element, index) => {
@@ -151,12 +167,22 @@ initializeCrocodileComponents() {
         element: element.cloneNode(true),
         type: 'fullWidth',
         spans: this.config.columnsCount,
-        data: { id: `fullwidth-${index}`, index }
+        data: { id: `fullwidth-${index}`, index },
+        originalOrder: Array.from(this.container.children).indexOf(element)
       });
+      
+      elementsToRemove.push(element);
+    });
+    
+    // Remove original elements to prevent duplicates
+    elementsToRemove.forEach(element => {
+      if (element.parentNode) {
+        element.remove();
+      }
     });
     
     if (this.config.debug) {
-      console.log(`Loaded ${this.pools.projects.length} projects, ${this.pools.squares.length} squares, ${this.pools.custom.length} custom items`);
+      console.log(`Loaded and cleaned: ${this.pools.projects.length} projects, ${this.pools.squares.length} squares, ${this.pools.custom.length} custom items`);
     }
   }
 
@@ -170,7 +196,8 @@ initializeCrocodileComponents() {
   createProperRowLayout() {
     this.pools.mixed = [];
     
-    const regularItems = [
+    // Combine all regular items and shuffle them first
+    let regularItems = [
       ...this.pools.projects,
       ...this.pools.squares,
       ...this.pools.custom
@@ -180,14 +207,10 @@ initializeCrocodileComponents() {
       return;
     }
 
-    if (this.config.debug) {
-      console.log('=== Regular Items Order Before Layout ===');
-      regularItems.slice(0, 10).forEach((item, index) => {
-        const title = item.data.title || `Item ${index}`;
-        console.log(`${index + 1}. ${title} (${item.type})`);
-      });
-    }
+    // Shuffle the array to randomly distribute squares among projects
+    this.shuffleArray(regularItems);
 
+    // Now lay out items and track gaps in real-time
     let currentRow = 0;
     let currentColumn = 0;
     let regularRowsProcessed = 0;
@@ -197,15 +220,41 @@ initializeCrocodileComponents() {
     const rowsBeforeFullWidth = this.config.fullWidthEveryRows;
     const fullWidthItemsToUse = this.pools.fullWidth.length;
 
+    // Track which items can be duplicated (squares and small custom items)
+    const duplicableItems = [...this.pools.squares, ...this.pools.custom.filter(item => (item.spans || 1) === 1)];
+
     for (let i = 0; i < regularItems.length; i++) {
       const item = regularItems[i];
       const itemSpans = item.spans || 1;
       
+      // Check if we need to move to next row
       if (currentColumn + itemSpans > totalColumns) {
+        // Fill any remaining gaps in current row before moving to next
+        const gapsInCurrentRow = totalColumns - currentColumn;
+        if (gapsInCurrentRow > 0 && duplicableItems.length > 0) {
+          for (let g = 0; g < gapsInCurrentRow; g++) {
+            const sourceItem = duplicableItems[Math.floor(Math.random() * duplicableItems.length)];
+            const duplicatedItem = {
+              ...sourceItem,
+              element: sourceItem.element.cloneNode(true),
+              data: { 
+                ...sourceItem.data, 
+                id: `${sourceItem.data.id}-gap-fill-${currentRow}-${currentColumn + g}`,
+                index: `${sourceItem.data.index}-gap-${g}`
+              },
+              isDuplicate: true,
+              rowPosition: currentRow,
+              columnStart: currentColumn + g
+            };
+            this.pools.mixed.push(duplicatedItem);
+          }
+        }
+        
         regularRowsProcessed++;
         currentRow++;
         currentColumn = 0;
         
+        // Check for full-width break
         if (regularRowsProcessed > 0 && 
             regularRowsProcessed % rowsBeforeFullWidth === 0 && 
             fullWidthIndex < fullWidthItemsToUse) {
@@ -230,6 +279,28 @@ initializeCrocodileComponents() {
       currentColumn += itemSpans;
     }
     
+    // Fill any remaining gaps in the last row
+    const finalGaps = totalColumns - currentColumn;
+    if (finalGaps > 0 && duplicableItems.length > 0) {
+      for (let g = 0; g < finalGaps; g++) {
+        const sourceItem = duplicableItems[Math.floor(Math.random() * duplicableItems.length)];
+        const duplicatedItem = {
+          ...sourceItem,
+          element: sourceItem.element.cloneNode(true),
+          data: { 
+            ...sourceItem.data, 
+            id: `${sourceItem.data.id}-final-gap-${currentColumn + g}`,
+            index: `${sourceItem.data.index}-final-${g}`
+          },
+          isDuplicate: true,
+          rowPosition: currentRow,
+          columnStart: currentColumn + g
+        };
+        this.pools.mixed.push(duplicatedItem);
+      }
+    }
+    
+    // Add remaining full-width items
     while (fullWidthIndex < fullWidthItemsToUse) {
       currentRow++;
       this.pools.mixed.push({
@@ -242,13 +313,26 @@ initializeCrocodileComponents() {
     }
     
     if (this.config.debug) {
-      console.log('=== Final Mixed Order ===');
-      this.pools.mixed.slice(0, 15).forEach((item, index) => {
-        const title = item.data.title || `Item ${index}`;
+      console.log('=== Final Mixed Order with Gap Filling ===');
+      const duplicateCount = this.pools.mixed.filter(item => item.isDuplicate).length;
+      console.log(`Total items: ${this.pools.mixed.length} (${duplicateCount} gap-fillers added)`);
+      
+      this.pools.mixed.slice(0, 20).forEach((item, index) => {
+        const title = item.data.title || `${item.type} ${item.data.index}`;
         const type = item.isFullWidth ? 'FULL-WIDTH' : item.type;
-        console.log(`${index + 1}. ${title} (${type}) - Row: ${item.rowPosition}, Col: ${item.columnStart}`);
+        const isDupe = item.isDuplicate ? ' (GAP-FILLER)' : '';
+        console.log(`${index + 1}. ${title} (${type})${isDupe} - Row: ${item.rowPosition}, Col: ${item.columnStart}`);
       });
     }
+  }
+
+  // Fisher-Yates shuffle algorithm for random distribution
+  shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
   }
 
   renderGrid() {
@@ -256,6 +340,7 @@ initializeCrocodileComponents() {
 
     const itemsToShow = this.pools.mixed.slice(0, this.state.currentShowCount);
     
+    // Clear container completely before rendering
     this.container.innerHTML = '';
 
     const itemsByRow = {};
@@ -295,14 +380,6 @@ initializeCrocodileComponents() {
     setTimeout(() => {
       this.initializeCustomComponents();
     }, 100);
-  }
-  
-  initializeCustomComponents() {
-    this.initializeFullWidthComponents();
-    
-    document.dispatchEvent(new CustomEvent('gridRerendered', {
-      detail: { gridInstance: this }
-    }));
   }
 
   initializeFullWidthComponents() {
@@ -344,23 +421,24 @@ document.addEventListener('DOMContentLoaded', () => {
                          currentPath.startsWith('/projects/');
   
   if (isProjectsRoute) {
-    window.cleanGridPool = new CleanGridPool({
-      containerSelector: '#dynamicGrid',
-      defaultShowCount: 50,
-      fullWidthEveryRows: 5,
-      columnsCount: 5,
-      debug: false
-    });
+    // Ensure only one instance is created
+    if (!window.cleanGridPool) {
+      window.cleanGridPool = new CleanGridPool({
+        containerSelector: '#dynamicGrid',
+        defaultShowCount: 600,
+        fullWidthEveryRows: 15,
+        columnsCount: 6,
+        debug: false
+      });
 
-    window.gridPool = window.cleanGridPool;
-
+      window.gridPool = window.cleanGridPool;
+    }
   } else {
     setTimeout(() => {
       document.body.classList.add('page-loaded');
     }, 100);
   }
 });
-
 
 document.addEventListener('DOMContentLoaded', function() {
   const searchInput = document.querySelector('.search-input');
