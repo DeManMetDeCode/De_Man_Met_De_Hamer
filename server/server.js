@@ -332,7 +332,7 @@ const renderTemplate = (template, data) => {
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server available on http://localhost:${PORT}`);
+    console.log(`Server available on ${PORT}`);
     console.log("Clean data-only server running");
 });
 

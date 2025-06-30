@@ -386,3 +386,12 @@
 }
 
 /* Removed the problematic search container styling that might interfere with grid */
+
+.search-hidden-aggressive {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+.search-hidden {
+  display: none !important;
+}

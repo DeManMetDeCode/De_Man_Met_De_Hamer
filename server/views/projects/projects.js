@@ -2,6 +2,7 @@
  * Clean Object Pool System - JavaScript Only (Simplified Version)
  * UPDATED: Optimized to work seamlessly with external search functionality
  * FIXED: Removes duplicates by clearing original elements after loading
+ * ENHANCED: More frequent gap filling calculations
  */
 
 class CleanGridPool {
@@ -96,6 +97,24 @@ class CleanGridPool {
     document.addEventListener('gridRefreshRequested', () => {
       this.refreshVisibleElements();
     });
+  }
+
+  // New method that recalculates layout and re-renders
+  refreshGrid() {
+    if (!this.state.isInitialized) return;
+    
+    if (this.config.debug) {
+      console.log('Refreshing grid with new gap calculations...');
+    }
+    
+    // Recalculate the layout with fresh gap filling
+    this.createProperRowLayout();
+    this.renderGrid();
+    
+    // Re-initialize components
+    setTimeout(() => {
+      this.refreshVisibleElements();
+    }, 50);
   }
 
   refreshVisibleElements() {
@@ -196,7 +215,7 @@ class CleanGridPool {
   createProperRowLayout() {
     this.pools.mixed = [];
     
-    // Combine all regular items and shuffle them first
+    // Combine all regular items and shuffle them fresh each time
     let regularItems = [
       ...this.pools.projects,
       ...this.pools.squares,
@@ -207,7 +226,7 @@ class CleanGridPool {
       return;
     }
 
-    // Shuffle the array to randomly distribute squares among projects
+    // Shuffle the array to randomly distribute squares among projects each time
     this.shuffleArray(regularItems);
 
     // Now lay out items and track gaps in real-time
@@ -221,7 +240,17 @@ class CleanGridPool {
     const fullWidthItemsToUse = this.pools.fullWidth.length;
 
     // Track which items can be duplicated (squares and small custom items)
-    const duplicableItems = [...this.pools.squares, ...this.pools.custom.filter(item => (item.spans || 1) === 1)];
+    // ENHANCED: More aggressive gap filling with squares
+    const baseSquares = [...this.pools.squares];
+    const duplicableItems = [
+      ...baseSquares,
+      ...baseSquares, // Double the squares
+      ...baseSquares, // Triple the squares for even more gap filling
+      ...this.pools.custom.filter(item => (item.spans || 1) === 1)
+    ];
+
+    // Track positions of placed squares to maintain distance
+    this.placedSquarePositions = [];
 
     for (let i = 0; i < regularItems.length; i++) {
       const item = regularItems[i];
@@ -233,7 +262,11 @@ class CleanGridPool {
         const gapsInCurrentRow = totalColumns - currentColumn;
         if (gapsInCurrentRow > 0 && duplicableItems.length > 0) {
           for (let g = 0; g < gapsInCurrentRow; g++) {
-            const sourceItem = duplicableItems[Math.floor(Math.random() * duplicableItems.length)];
+            const gapPosition = { row: currentRow, col: currentColumn + g };
+            
+            // Choose item based on distance from other squares
+            const sourceItem = this.selectItemForGap(duplicableItems, gapPosition);
+            
             const duplicatedItem = {
               ...sourceItem,
               element: sourceItem.element.cloneNode(true),
@@ -247,6 +280,15 @@ class CleanGridPool {
               columnStart: currentColumn + g
             };
             this.pools.mixed.push(duplicatedItem);
+            
+            // Track if we placed a square
+            if (sourceItem.type === 'square') {
+              this.placedSquarePositions.push({
+                row: currentRow,
+                col: currentColumn + g,
+                type: 'duplicate'
+              });
+            }
           }
         }
         
@@ -276,6 +318,15 @@ class CleanGridPool {
         columnStart: currentColumn
       });
       
+      // Track square positions for distance calculation
+      if (item.type === 'square') {
+        this.placedSquarePositions.push({
+          row: currentRow,
+          col: currentColumn,
+          type: 'original'
+        });
+      }
+      
       currentColumn += itemSpans;
     }
     
@@ -283,7 +334,11 @@ class CleanGridPool {
     const finalGaps = totalColumns - currentColumn;
     if (finalGaps > 0 && duplicableItems.length > 0) {
       for (let g = 0; g < finalGaps; g++) {
-        const sourceItem = duplicableItems[Math.floor(Math.random() * duplicableItems.length)];
+        const gapPosition = { row: currentRow, col: currentColumn + g };
+        
+        // Choose item based on distance from other squares
+        const sourceItem = this.selectItemForGap(duplicableItems, gapPosition);
+        
         const duplicatedItem = {
           ...sourceItem,
           element: sourceItem.element.cloneNode(true),
@@ -297,6 +352,15 @@ class CleanGridPool {
           columnStart: currentColumn + g
         };
         this.pools.mixed.push(duplicatedItem);
+        
+        // Track if we placed a square
+        if (sourceItem.type === 'square') {
+          this.placedSquarePositions.push({
+            row: currentRow,
+            col: currentColumn + g,
+            type: 'duplicate'
+          });
+        }
       }
     }
     
@@ -315,7 +379,8 @@ class CleanGridPool {
     if (this.config.debug) {
       console.log('=== Final Mixed Order with Gap Filling ===');
       const duplicateCount = this.pools.mixed.filter(item => item.isDuplicate).length;
-      console.log(`Total items: ${this.pools.mixed.length} (${duplicateCount} gap-fillers added)`);
+      const squareCount = this.placedSquarePositions.length;
+      console.log(`Total items: ${this.pools.mixed.length} (${duplicateCount} gap-fillers added, ${squareCount} squares total)`);
       
       this.pools.mixed.slice(0, 20).forEach((item, index) => {
         const title = item.data.title || `${item.type} ${item.data.index}`;
@@ -324,6 +389,68 @@ class CleanGridPool {
         console.log(`${index + 1}. ${title} (${type})${isDupe} - Row: ${item.rowPosition}, Col: ${item.columnStart}`);
       });
     }
+  }
+
+  // New method to select items for gaps based on distance from existing squares
+  selectItemForGap(duplicableItems, gapPosition) {
+    const minDistance = 5; // Minimum distance between squares (in grid cells)
+    
+    // Separate squares from other items
+    const squares = duplicableItems.filter(item => item.type === 'square');
+    const nonSquares = duplicableItems.filter(item => item.type !== 'square');
+    
+    // Calculate distance to nearest square
+    const distanceToNearestSquare = this.getDistanceToNearestSquare(gapPosition);
+    
+    if (this.config.debug && this.placedSquarePositions.length > 0) {
+      console.log(`Gap at (${gapPosition.row}, ${gapPosition.col}) - distance to nearest square: ${distanceToNearestSquare}`);
+    }
+    
+    // If we're too close to another square, prefer non-square items
+    if (distanceToNearestSquare < minDistance && nonSquares.length > 0) {
+      const randomIndex = Math.floor(Math.random() * nonSquares.length);
+      return nonSquares[randomIndex];
+    }
+    
+    // If we're far enough away, we can use squares but with some randomness
+    if (distanceToNearestSquare >= minDistance) {
+      // 70% chance for square, 30% for other items if we have both
+      const useSquare = Math.random() < 0.7;
+      
+      if (useSquare && squares.length > 0) {
+        const randomIndex = Math.floor(Math.random() * squares.length);
+        return squares[randomIndex];
+      } else if (nonSquares.length > 0) {
+        const randomIndex = Math.floor(Math.random() * nonSquares.length);
+        return nonSquares[randomIndex];
+      }
+    }
+    
+    // Fallback: random selection from all available items
+    const randomIndex = Math.floor(Math.random() * duplicableItems.length);
+    return duplicableItems[randomIndex];
+  }
+
+  // Calculate distance to the nearest placed square
+  getDistanceToNearestSquare(position) {
+    if (this.placedSquarePositions.length === 0) {
+      return Infinity; // No squares placed yet
+    }
+    
+    let minDistance = Infinity;
+    
+    this.placedSquarePositions.forEach(squarePos => {
+      // Calculate Manhattan distance (more appropriate for grid layout)
+      const rowDiff = Math.abs(position.row - squarePos.row);
+      const colDiff = Math.abs(position.col - squarePos.col);
+      const distance = Math.max(rowDiff, colDiff); // Use Chebyshev distance (max of row/col diff)
+      
+      if (distance < minDistance) {
+        minDistance = distance;
+      }
+    });
+    
+    return minDistance;
   }
 
   // Fisher-Yates shuffle algorithm for random distribution
@@ -368,6 +495,10 @@ class CleanGridPool {
         element.setAttribute('data-row', item.rowPosition);
         element.setAttribute('data-col-start', item.columnStart);
         element.setAttribute('data-spans', item.spans);
+        
+        if (item.isDuplicate) {
+          element.setAttribute('data-gap-filler', 'true');
+        }
         
         if (item.isFullWidth) {
           element.classList.add('full-width-active');
@@ -551,7 +682,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ====================================
-    // FILTER SYNCHRONIZATION
+    // FILTER SYNCHRONIZATION WITH GRID REFRESH
     // ====================================
 
     // Sync desktop to mobile filters
@@ -580,13 +711,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Close mobile menu after selection
                 setTimeout(() => {
                     closeMobileMenu();
-                }, 300); // Small delay for better UX
+                }, 300);
             }
         });
     });
 
     // ====================================
-    // SEARCH SYNCHRONIZATION
+    // SEARCH SYNCHRONIZATION WITH GRID REFRESH
     // ====================================
 
     searchInputs.forEach(input => {
@@ -727,5 +858,5 @@ document.addEventListener('DOMContentLoaded', function() {
         handleSearchInput
     };
 
-    console.log('Responsive navigation initialized successfully');
+    console.log('Responsive navigation with grid refresh integration initialized successfully');
 });
